@@ -11,8 +11,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Track extends ListenerAdapter {
+
+    HttpClient client = HttpClient.newHttpClient();
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -31,14 +35,22 @@ public class Track extends ListenerAdapter {
 
             String player = options.getAsString();
 
+            String uuid;
+
             try {
-                long uuid = getUuidFromName(player);
+                uuid = getUuidFromName(player);
             } catch (Exception e) {
+                event.reply("Player not found!");
                 throw new RuntimeException(e);
             }
 
             // get person who requested
             // ping the hypixel api every min to see if they're still on skyblock
+            try {
+                pingHypixelApi(uuid);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             /*
             if session.online == true {
                 if !(session.game == SKYBLOCK and session.place == dynamic) {
@@ -53,11 +65,9 @@ public class Track extends ListenerAdapter {
         }
     }
 
-    public long getUuidFromName(String name) throws Exception {
+    public String getUuidFromName(String name) throws Exception {
 
         long unixTIme = Instant.now().getEpochSecond();
-
-        HttpClient client = HttpClient.newHttpClient();
 
         // get uuid from player name
         HttpRequest request = HttpRequest
@@ -68,9 +78,36 @@ public class Track extends ListenerAdapter {
         HttpResponse<String> response;
 
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String responseBody = response.body();
 
-        System.out.println(response.body().toString());
+        // use regex to find id from response coz I cbs turning it into a pojo
+        Pattern pattern = Pattern.compile("\"id\":\".*\"");
+        Matcher matcher = pattern.matcher(responseBody);
+        String retVal = "";
+        if(matcher.find()) {
+            System.out.println(matcher.group());
+            retVal = matcher.group().substring(6, matcher.group().length() - 1);
+        } else {
+            return null;
+        }
 
-        return 1l;
+        return retVal;
+    }
+
+    public boolean pingHypixelApi(String uuid) throws Exception {
+
+        HttpRequest httpRequest = HttpRequest
+                .newBuilder(URI.create("https://api.hypixel.net/status?uuid=" + uuid))
+                .header("API-key", "key")
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+
+        response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        // get whether player is on skyblock or not and return true if they are, false if not
+
+        return true;
     }
 }

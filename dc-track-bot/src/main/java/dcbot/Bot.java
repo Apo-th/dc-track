@@ -16,15 +16,15 @@ public class Bot {
 
 
     public static void main(String[] args) throws Exception {
-        JDA jda = JDABuilder.create("", Arrays.asList(INTENTS))
-                .setStatus(OnlineStatus.ONLINE)
-                .addEventListeners(new Track())
-                .build().awaitReady();
-
-        jda.getGuildById("id")
-                .upsertCommand("track", "Start tracking a player's active status in hypixel skyblock")
-                .addOption(OptionType.STRING, "player", "ign of player you want to track", true)
-                .queue();
+//        JDA jda = JDABuilder.create("", Arrays.asList(INTENTS))
+//                .setStatus(OnlineStatus.ONLINE)
+//                .addEventListeners(new Track())
+//                .build().awaitReady();
+//
+//        jda.getGuildById("id")
+//                .upsertCommand("track", "Start tracking a player's active status in hypixel skyblock")
+//                .addOption(OptionType.STRING, "player", "ign of player you want to track", true)
+//                .queue();
 
         // global command
 //        jda.upsertCommand("track", "Start tracking a player's active status in hypixel skyblock")
