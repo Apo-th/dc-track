@@ -14,7 +14,8 @@ public class Bot {
 
     public static final GatewayIntent[] INTENTS = {GatewayIntent.GUILD_MESSAGES};
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+
+    public static void main(String[] args) throws Exception {
         JDA jda = JDABuilder.create("", Arrays.asList(INTENTS))
                 .setStatus(OnlineStatus.ONLINE)
                 .addEventListeners(new Track())
@@ -24,7 +25,6 @@ public class Bot {
                 .upsertCommand("track", "Start tracking a player's active status in hypixel skyblock")
                 .addOption(OptionType.STRING, "player", "ign of player you want to track", true)
                 .queue();
-
 
         // global command
 //        jda.upsertCommand("track", "Start tracking a player's active status in hypixel skyblock")
